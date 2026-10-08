@@ -1,3 +1,5 @@
+// Dán link Web App URL thu được từ Google Apps Script ở Bước 1 vào đây
+const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwupTdEF90LKeQ2MrFpnTfOKFwbcwI5Q4dvUC-M6V2JsoCxbpK8jQirEbQUsFOJX8q_kw/exec';
 import React, { useState, useRef, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { Header } from './components/Header';
@@ -58,7 +60,23 @@ export default function App() {
       // Ignore if confetti fails
     }
   };
-
+const logToGoogleSheet = (userText: string, aiText: string, lesson: string | null, mood: string) => {
+    if (!GOOGLE_SHEET_WEBAPP_URL) return;
+    
+    // Gửi dữ liệu ngầm về Google Apps Script
+    fetch(GOOGLE_SHEET_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Bỏ qua hạn chế CORS khi gửi từ trình duyệt
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        timestamp: new Date().toLocaleString('vi-VN'),
+        currentLesson: lesson || 'Chưa chọn bài',
+        studentMood: mood || 'Bình thường',
+        userMessage: userText,
+        aiResponse: aiText,
+      }),
+    }).catch((err) => console.error('Lỗi khi lưu log Google Sheet:', err));
+  };
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
@@ -116,6 +134,8 @@ export default function App() {
       }
 
       setMessages((prev) => [...prev, aiMsg]);
+      // 4. 🔥 TỰ ĐỘNG GHI NHẬN: Bắn dữ liệu cuộc trò chuyện về Google Sheet
+      logToGoogleSheet(trimmed, aiReply, currentLesson, studentMood);
     } catch (err: unknown) {
       console.error('Error contacting chat endpoint:', err);
       const errorMsg: ChatMessage = {
