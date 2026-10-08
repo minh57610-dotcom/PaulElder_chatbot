@@ -1,0 +1,6 @@
+{
+  "name": "Chuyên Gia Tư Duy Phản Biện Paul-Elder",
+  "description": "Nền tảng đồng hành và đối thoại rèn luyện tư duy phản biện theo mô hình Paul-Elder và tâm lý học đường.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
